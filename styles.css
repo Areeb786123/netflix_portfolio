@@ -193,6 +193,7 @@ body {
     top: 0;
     width: 100%;
     padding: 1rem 4rem;
+    height: 60px;
     background: linear-gradient(180deg, rgba(0,0,0,0.8) 10%, transparent);
     z-index: 1000;
     display: flex;
@@ -273,6 +274,7 @@ body {
     position: relative;
     height: 70vh;
     overflow: hidden;
+    padding-top: 60px;
     display: flex;
     align-items: center;
 }
@@ -679,6 +681,7 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .netflix-header {
+        padding-top: 70px;
         padding: 1rem 2rem;
     }
 
