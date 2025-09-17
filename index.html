@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Areeb Ahmad - Netflix Style Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #141414;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Account Selection Screen */
+        .account-selection {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect fill="%23141414" width="1920" height="1080"/></svg>');
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #e50914;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .selection-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .selection-subtitle {
+            font-size: 1.3rem;
+            color: #999;
+            margin-bottom: 4rem;
+            max-width: 600px;
+        }
+
+        .profiles-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .profile-card {
+            width: 200px;
+            background: rgba(51,51,51,0.8);
+            border-radius: 8px;
+            padding: 2rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-card:hover {
+            transform: scale(1.05);
+            background: rgba(229,9,20,0.1);
+        }
+
+        .profile-card.selected {
+            border-color: #e50914;
+            background: rgba(229,9,20,0.15);
+            transform: scale(1.05);
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .recruiter-avatar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .student-avatar { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .visitor-avatar { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .profile-name {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .profile-desc {
+            font-size: 0.9rem;
+            color: #999;
+            line-height: 1.3;
+        }
+
+        .continue-button {
+            background: #e50914;
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .continue-button.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .continue-button.enabled:hover {
+            background: #f40612;
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .main-app {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .main-app.active {
+            display: block;
+        }
+
+        /* Netflix Header */
+        .netflix-header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 4rem;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8) 10%, transparent);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .netflix-header.scrolled {
+            background: rgba(20,20,20,0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .header-logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e50914;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #e5e5e5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: white;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .search-btn, .notifications-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .search-btn:hover, .notifications-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .profile-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Hero Section with Video */
+        .hero-section {
+            position: relative;
+            height: 70vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(0,0,0,0.8) 0%,
+                rgba(0,0,0,0.4) 50%,
+                rgba(0,0,0,0.1) 100%
+            );
+            z-index: 2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            max-width: 500px;
+            padding: 0 4rem;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero-description {
+            font-size: 1.4rem;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+            color: #e5e5e5;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .play-btn, .info-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .play-btn {
+            background: white;
+            color: black;
+        }
+
+        .play-btn:hover {
+            background: rgba(255,255,255,0.8);
+        }
+
+        .info-btn {
+            background: rgba(109,109,110,0.7);
+            color: white;
+        }
+
+        .info-btn:hover {
+            background: rgba(109,109,110,0.4);
+        }
+
+        .volume-control {
+            margin-left: 1rem;
+            background: rgba(51,51,51,0.8);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: blink 2s infinite;
+        }
+
+        .volume-control:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: white;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+
+        /* Content Rows */
+        .content-section {
+            padding: 0 4rem;
+            margin-top: -100px;
+            position: relative;
+            z-index: 4;
+        }
+
+        .content-row {
+            margin-bottom: 3rem;
+        }
+
+        .row-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #e5e5e5;
+        }
+
+        .items-container {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: none;
+        }
+
+        .items-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .content-item {
+            min-width: 300px;
+            height: 169px;
+            background: #333;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .content-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .item-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #e50914 0%, #b81d24 100%);
+        }
+
+        .item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .content-item:hover .item-info {
+            transform: translateY(0);
+        }
+
+        .item-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-desc {
+            font-size: 0.8rem;
+            color: #ccc;
+            line-height: 1.3;
+        }
+
+        .scale-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e50914;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* Skills Grid */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .skill-card {
+            background: rgba(51,51,51,0.8);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .skill-card:hover {
+            background: rgba(229,9,20,0.1);
+            transform: translateY(-5px);
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Experience Timeline */
+        .timeline {
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            background: rgba(51,51,51,0.8);
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #e50914;
+        }
+
+        .timeline-title {
+            color: #e50914;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-company {
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-duration {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-list {
+            margin-left: 1rem;
+            color: #ccc;
+        }
+
+        .timeline-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #141414;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-screen.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: 3px solid #e50914;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .profile-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #141414;
+            padding: 3rem;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-profiles {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .modal-profile {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .modal-profile:hover {
+            transform: scale(1.1);
+        }
+        .skills-strip {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  background: #111;
+  padding: 10px 0;
+}
+
+.skills-track {
+  display: flex;
+  animation: scroll-left 15s linear infinite;
+}
+
+.skill-item {
+  flex: 0 0 auto;
+  text-align: center;
+  margin: 0 20px;
+  color: white;
+}
+
+.skill-item img {
+  height: 60px;
+  width: auto;
+  display: block;
+  margin: 0 auto 5px;
+  border-radius: 10px;
+}
+
+@keyframes scroll-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .netflix-header {
+                padding: 1rem 2rem;
+            }
+
+            .hero-content {
+                padding: 0 2rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .content-section {
+                padding: 0 2rem;
+            }
+
+            .profiles-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Account Selection Screen -->
+    <div class="account-selection" id="accountSelection">
+        <div class="logo">AREEBFLIX</div>
+        <h1 class="selection-title">Who's watching?</h1>
+        <p class="selection-subtitle">Select your profile to see personalized content tailored to your interests</p>
+        
+        <div class="profiles-container">
+            <div class="profile-card" data-type="recruiter" id="recruiterCard">
+                <div class="profile-avatar recruiter-avatar">👔</div>
+                <div class="profile-name">Job Recruiter</div>
+                <div class="profile-desc">View professional experience, skills, and high-scale projects</div>
+            </div>
+            
+            <div class="profile-card" data-type="student" id="studentCard">
+                <div class="profile-avatar student-avatar">🎓</div>
+                <div class="profile-name">Student</div>
+                <div class="profile-desc">Explore learning journey, educational projects, and growth</div>
+            </div>
+            
+            <div class="profile-card" data-type="visitor" id="visitorCard">
+                <div class="profile-avatar visitor-avatar">👋</div>
+                <div class="profile-name">Random Visitor</div>
+                <div class="profile-desc">Discover interesting projects and get to know me better</div>
+            </div>
+        </div>
+        
+        <button class="continue-button" id="continueButton">Continue</button>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-app" id="mainApp">
+        <!-- Netflix Header -->
+        <header class="netflix-header" id="netflixHeader">
+            <div class="header-logo">AREEBFLIX</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-section="projects">Projects</a></li>
+                    <li><a href="#" class="nav-link" data-section="experience">Experience</a></li>
+                    <li><a href="#" class="nav-link" data-section="skills">Skills</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="search-btn">🔍</button>
+                <button class="notifications-btn">🔔</button>
+                <button class="profile-btn recruiter-avatar" id="profileButton" onclick="openProfileModal()">👔</button>
+            </div>
+        </header>
+
+        <!-- Hero Section with Video -->
+        <section class="hero-section" id="heroSection">
+            <div class="hero-video-container">
+                <div id="heroVideoPlayer"></div>
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Areeb Ahmad</h1>
+                <p class="hero-description" id="heroDescription">
+                    SDE 1 Android Developer with 3+ years experience building high-scale applications for 50M+ users at Angel One, 300K+ users at LearnApp, and SaaS platforms at TurnsApp
+                </p>
+                <div class="hero-buttons">
+                    <button class="play-btn" onclick="scrollToSection('projects')">
+                        ▶ View Projects
+                    </button>
+                    <button class="info-btn" onclick="openLinkedIn()">
+                        ℹ More Info
+                    </button>
+                    <button class="volume-control" id="volumeControl" onclick="toggleVolume()">
+                        🔊
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Section -->
+        <div class="content-section">
+            <!-- Current Work -->
+            <div class="content-row">
+                <h2 class="row-title">What I'm Currently Working On</h2>
+                <div style="background: rgba(229,9,20,0.1); border: 1px solid rgba(229,9,20,0.3); border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+                    <h3 style="color: #e50914; margin-bottom: 1rem;">🚀 At Angel One (50M+ Users)</h3>
+                    <ul style="margin-left: 1rem; color: #ccc;">
+                        <li>📱 Building FinOne app from scratch with modern Android architecture</li>
+                        <li>🔧 Developing feature-rich SDK with 30% UX improvement</li>
+                        <li>📊 Implementing social feeds and stories for stock market creators</li>
+                        <li>⚡ Optimizing for high-scale performance and user engagement</li>
+                        <li>🛠️ Working with Kotlin, Jetpack Compose, Hilt, and modern Android tools</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Apps I've Built -->
+            <div class="content-row" id="projects">
+                <h2 class="row-title">Apps I've Built & Worked On</h2>
+                <div class="items-container">
+                    <div class="content-item" onclick="openLink('https://play.google.com/store/apps/details?id=com.angelone')">
+                        <div class="scale-badge">50M+ Users</div>
+                        <div class="item-image" 
+                        style="background:
+                               url('https://img.etimg.com/thumb/width-1200,height-900,imgsize-13764,resizemode-75,msid-122864109/industry/banking/finance/insure/angel-one-to-invest-rs-400-cr-in-life-insurance-jv-with-singapores-livwell.jpg') 
+                               no-repeat center center; 
+                               background-size: cover; 
+                               border-radius: 12px; 
+                               color: white;">
+                    
+                   </div>
+                   
+                        <div class="item-info">
+                            <div class="item-title">Angel One</div>
+                            <div class="item-desc">India's leading trading platform. Built FinOne app and SDK features serving 50M+ users.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-item" onclick="openLink('https://play.google.com/store/apps/details?id=com.learnapp')">
+                        <div class="scale-badge">300K+ Users</div>
+                        <div class="item-image"
+                            style="background:
+                            url('https://play-lh.googleusercontent.com/gkHTKOSo5_2-GLtaRXe18I4XYXQOZhh3VXqkbxjnQYL5eCCLm6Zaz3jSE1sQW5Rf8qkw=w416-h235-rw') 
+                            no-repeat center center; 
+                            background-size: cover; 
+                            border-radius: 12px; 
+                            color: white;">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">LearnApp</div>
+                            <div class="item-desc">Stock market education platform with 70% increase in user engagement.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-item" onclick="openLink('https://play.google.com/store/apps/details?id=com.turnsapp.pos')">
+                        <div class="scale-badge">SaaS Platform</div>
+                        <div class="item-image"
+                            style="background:
+                            url('https://img-cdn.publive.online/fit-in/1200x675/filters:format(webp)/entrackr/media/media_files/2025/02/21/p1Bs6H5prvM2p3yfTwre.png') 
+                            no-repeat center center; 
+                            background-size: cover; 
+                            border-radius: 12px; 
+                            color: white;">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">TurnsApp POS</div>
+                            <div class="item-desc">B2B SaaS platform with 50% performance optimization using Compose Multiplatform.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- strips scrolling-->
+            <div class="skills-strip">
+                <div class="skills-track">
+                  <!-- Native Android -->
+                  <div class="skill-item">
+                    <img src="https://developer.android.com/static/images/logos/android.svg" alt="Android" />
+                    <p>Android (Java/Kotlin)</p>
+                  </div>
+                  <!-- Flutter -->
+                  <div class="skill-item">
+                    <img src="https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png" alt="Flutter" />
+                    <p>Flutter</p>
+                  </div>
+                  <!-- Jetpack -->
+                  <div class="skill-item">
+                    <img src="https://developer.android.com/images/jetpack/jetpack-compose-icon_RGB.png" alt="Jetpack" />
+                    <p>Jetpack</p>
+                  </div>
+                  <!-- Hilt -->
+                  <div class="skill-item">
+                    <img src="https://i.ytimg.com/vi/I338rqAVFaE/maxresdefault.jpg" alt="Hilt" />
+                    <p>Hilt</p>
+                  </div>
+                  <!-- MongoDB -->
+                  <div class="skill-item">
+                    <img src="https://webimages.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="MongoDB" />
+                    <p>MongoDB</p>
+                  </div>
+                  <!-- Compose -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5w8k4gFUT0PmmM1kBOqDQeKlN1LpjiVAwEg&s" alt="Compose" />
+                    <p>Compose</p>
+                  </div>
+                  <!-- Coroutines -->
+                  <div class="skill-item">
+                    <img src="https://needone.app/content/images/2023/01/Coroutine.png" alt="Coroutines" />
+                    <p>Coroutines</p>
+                  </div>
+                  <!-- RoomDB -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvr1KHpB20hz2-WzHUkcVDH3zI_SqhrpLTw&s" alt="RoomDB" />
+                    <p>RoomDB</p>
+                  </div>
+    
+              
+                  <!-- Ktor -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzgJ3APEnvOpfOQLecXL7G-k8x1iO2ucEpyg&s" alt="Ktor" />
+                    <p>Ktor</p>
+                  </div>
+                  <!-- Koin -->
+                  <div class="skill-item">
+                    <img src="https://insert-koin.io/img/koin_new_logo.png" alt="Koin" />
+                    <p>Koin</p>
+                  </div>
+                  <!-- Compose Multiplatform -->
+                  <div class="skill-item">
+                    <img src="https://repository-images.githubusercontent.com/293498508/6469be07-159b-49de-9ffe-56340d5dfd07" alt="Compose Multiplatform" />
+                    <p>Compose Multiplatform</p>
+                  </div>
+
+                  <div class="skill-item">
+                    <img src="https://developer.android.com/static/images/logos/android.svg" alt="Android" />
+                    <p>Android (Java/Kotlin)</p>
+                  </div>
+                  <!-- Flutter -->
+                  <div class="skill-item">
+                    <img src="https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png" alt="Flutter" />
+                    <p>Flutter</p>
+                  </div>
+          
+                  <!-- Hilt -->
+                  <div class="skill-item">
+                    <img src="https://i.ytimg.com/vi/I338rqAVFaE/maxresdefault.jpg" alt="Hilt" />
+                    <p>Hilt</p>
+                  </div>
+                  <!-- MongoDB -->
+                  <div class="skill-item">
+                    <img src="https://webimages.mongodb.com/_com_assets/cms/mongodb_logo1-76twgcu2dm.png" alt="MongoDB" />
+                    <p>MongoDB</p>
+                  </div>
+                  <!-- Compose -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5w8k4gFUT0PmmM1kBOqDQeKlN1LpjiVAwEg&s" alt="Compose" />
+                    <p>Compose</p>
+                  </div>
+                  <!-- Coroutines -->
+                  <div class="skill-item">
+                    <img src="https://needone.app/content/images/2023/01/Coroutine.png" alt="Coroutines" />
+                    <p>Coroutines</p>
+                  </div>
+                  <!-- RoomDB -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZvr1KHpB20hz2-WzHUkcVDH3zI_SqhrpLTw&s" alt="RoomDB" />
+                    <p>RoomDB</p>
+                  </div>
+    
+              
+                  <!-- Ktor -->
+                  <div class="skill-item">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRzgJ3APEnvOpfOQLecXL7G-k8x1iO2ucEpyg&s" alt="Ktor" />
+                    <p>Ktor</p>
+                  </div>
+                  <!-- Koin -->
+                  <div class="skill-item">
+                    <img src="https://insert-koin.io/img/koin_new_logo.png" alt="Koin" />
+                    <p>Koin</p>
+                  </div>
+                  <!-- Compose Multiplatform -->
+                  <div class="skill-item">
+                    <img src="https://repository-images.githubusercontent.com/293498508/6469be07-159b-49de-9ffe-56340d5dfd07" alt="Compose Multiplatform" />
+                    <p>Compose Multiplatform</p>
+                  </div>
+                </div>
+            </div>
+              </div>
+
+            <!-- Personal Projects -->
+            <div class="content-row">
+                <h2 class="row-title">Personal Projects on GitHub</h2>
+                <div class="items-container">
+                    <div class="content-item" onclick="openLink('https://github.com/Areeb786123/kmmNewsApp')">
+                        <div class="item-image"
+                            style="background:
+                            url('https://blog.jetbrains.com/wp-content/uploads/2024/10/Featured_1280x720-2x-2.png') 
+                            no-repeat center center; 
+                            background-size: cover; 
+                            border-radius: 12px; 
+                            color: white;">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">KMM News App</div>
+                            <div class="item-desc">Kotlin Multiplatform project targeting Android, iOS, Web, and Desktop</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-item" onclick="openLink('https://github.com/Areeb786123/sekai_sheet')">
+                        <div class="item-image"
+                        style="background:
+                        url('https://private-user-images.githubusercontent.com/56149022/305341689-8f5ea001-a761-4e3c-a462-e3272502a1bb.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTgxMzc2MzgsIm5iZiI6MTc1ODEzNzMzOCwicGF0aCI6Ii81NjE0OTAyMi8zMDUzNDE2ODktOGY1ZWEwMDEtYTc2MS00ZTNjLWE0NjItZTMyNzI1MDJhMWJiLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA5MTclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwOTE3VDE5Mjg1OFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWMzOTQ4ZTJjZTM0MTZmZGJmMjRkMzAzMGMzN2VlYjIzNGYzMWM3ZjNjZjYwMjQ4NDFkMTA5MDQ3Y2Q2YTE4NzAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.gTMEoRc2YxPz5L1BIRSJ1zjTmCKxMFnLA_le8n73E4c') 
+                        no-repeat center center; 
+                        background-size: cover; 
+                        border-radius: 12px; 
+                        color: white;">
+                    
+                    </div>
+                        <div class="item-info">
+                            <div class="item-title">Sekai Sheet</div>
+                            <div class="item-desc">Wallpaper app with MVVM, Dagger-Hilt, Retrofit, and Paging 3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-item" onclick="openLink('https://github.com/Areeb786123/SpaceXLauncTracker')">
+                        <div class="item-image"
+                        style="background:
+                        url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTheCMPfqFHGZl4YxM8CBY45EZHLmi2v1ihbQ&s ')
+                        no-repeat center center; 
+                        background-size: cover; 
+                        border-radius: 12px; 
+                        color: white;">
+                    </div>
+                        <div class="item-info">
+                            <div class="item-title">SpaceX Launch Tracker</div>
+                            <div class="item-desc">Offline-capable app with favorites, Hilt DI, and video integration</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Section -->
+            <div class="content-row" id="skills">
+                <h2 class="row-title" id="skillsTitle">Technical Skills & Expertise</h2>
+                <div class="skills-grid" id="skillsGrid">
+                    <!-- Skills will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Experience Section -->
+            <div class="content-row" id="experience">
+                <h2 class="row-title">Professional Experience (3+ Years)</h2>
+                <div class="timeline" id="timeline">
+                    <!-- Experience will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Open Source -->
+            <div class="content-row">
+                <h2 class="row-title">Open Source Contributions</h2>
+                <div class="items-container">
+                    <div class="content-item">
+                        <div class="item-image"
+                        style="background:
+                        url('https://static.toiimg.com/thumb/msid-108710664,width-1280,height-720,resizemode-4/108710664.jpg ')
+                        no-repeat center center; 
+                        background-size: cover; 
+                        border-radius: 12px; 
+                        color: white;"></div>
+                        <div class="item-info">
+                            <div class="item-title">Mozilla Firefox</div>
+                            <div class="item-desc">Contributing to the open web with Firefox browser development</div>
+                        </div>
+                    </div>
+          
+                    <div class="content-item">
+                        <div class="item-image"
+                        style="background:
+                        url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5mlNrg8rtAYuB4gWEJ6J_zb7Sxk-eKiM2kg&s')
+                        no-repeat center center; 
+                        background-size: cover; 
+                        border-radius: 12px; 
+                        color: white;">
+                    </div>
+                        <div class="item-info">
+                            <div class="item-title">Kiwix Android</div>
+                            <div class="item-desc">Kiwix Android</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeProfileModal()">×</button>
+            <h2>Who's watching?</h2>
+            <div class="modal-profiles">
+                <div class="modal-profile" onclick="switchProfile('recruiter')">
+                    <div class="profile-avatar recruiter-avatar">👔</div>
+                    <div>Job Recruiter</div>
+                </div>
+                <div class="modal-profile" onclick="switchProfile('student')">
+                    <div class="profile-avatar student-avatar">🎓</div>
+                    <div>Student</div>
+                </div>
+                <div class="modal-profile" onclick="switchProfile('visitor')">
+                    <div class="profile-avatar visitor-avatar">👋</div>
+                    <div>Random Visitor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedProfile = null;
+        let isMuted = true;
+        let player = null;
+
+        // Load YouTube API
+        function loadYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        // YouTube API ready callback
+        window.onYouTubeIframeAPIReady = function() {
+            console.log('YouTube API loaded');
+        };
+
+        function createVideoPlayer(videoId) {
+            if (player) {
+                player.destroy();
+            }
+            
+            player = new YT.Player('heroVideoPlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 1,
+                    mute: 1,
+                    loop: 1,
+                    playlist: videoId,
+                    controls: 0,
+                    showinfo: 0,
+                    rel: 0,
+                    iv_load_policy: 3,
+                    modestbranding: 1,
+                    playsinline: 1,
+                    enablejsapi: 1
+                },
+                events: {
+                    onReady: function(event) {
+                        console.log('Video player ready');
+                        event.target.mute();
+                        event.target.playVideo();
+                    },
+                    onStateChange: function(event) {
+                        if (event.data === YT.PlayerState.ENDED) {
+                            event.target.playVideo();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Profile data
+        const profileData = {
+            recruiter: {
+                video: 'B8jgJo4yrCk',
+                description: 'SDE 1 Android Developer with 3+ years experience building high-scale applications for 50M+ users at Angel One, 300K+ users at LearnApp, and SaaS platforms at TurnsApp',
+                skills: [
+                    { icon: '📱', title: 'Android Development', desc: 'Kotlin, Java, Jetpack Compose, Native Android' },
+                    { icon: '🏗️', title: 'Architecture & Patterns', desc: 'MVVM, Clean Architecture, Hilt, DI' },
+                    { icon: '🌐', title: 'Multiplatform', desc: 'KMM, Compose Multiplatform, Cross-platform' },
+                    { icon: '🔧', title: 'Modern Libraries', desc: 'Retrofit, Coroutines, RoomDB, Paging 3' }
+                ],
+                experience: [
+                    {
+                        title: 'SDE 1 Android',
+                        company: 'Angel One - India',
+                        duration: 'Aug 2024 - Present',
+                        points: [
+                            'Developed feature-rich SDK with 30% UX improvement for 50M+ users',
+                            'Built FinOne Android app from scratch with modern architecture',
+                            'Implemented social feeds and stories for stock market creators',
+                            'Optimized performance for high-scale user engagement'
+                        ]
+                    },
+                    {
+                        title: 'SDE 1 Android',
+                        company: 'TurnsApp - Noida, India',
+                        duration: 'Feb 2023 - Aug 2024',
+                        points: [
+                            'Architected PayRange.kt library for secure payment transactions',
+                            'Optimized application performance, achieving 50% speed increase',
+                            'Led TurnsApp 2.0 development with Compose Multiplatform',
+                            'Increased user engagement by 50% through modern UI/UX'
+                        ]
+                    },
+                    {
+                        title: 'SDE 1 Android',
+                        company: 'LearnApp - Noida, India',
+                        duration: 'Jul 2022 - Jan 2023',
+                        points: [
+                            'Optimized Brightcove player integration for 300K+ users',
+                            'Enhanced video playback experience with 70% engagement increase',
+                            'Implemented analytics tracking for user behavior insights',
+                            'Revamped UX flows with exclusive features'
+                        ]
+                    }
+                ]
+            },
+            student: {
+                video: 'OPRqVMbBoMY',
+                description: 'Computer Science graduate from Galgotias University (2019-2023), passionate about Android development and learning cutting-edge mobile technologies through hands-on projects',
+                skills: [
+                    { icon: '🎓', title: 'Academic Background', desc: 'B.Tech CSE from Galgotias University (2019-2023)' },
+                    { icon: '📚', title: 'Core Programming', desc: 'Kotlin, Java, Mobile Development Fundamentals' },
+                    { icon: '🛠️', title: 'Development Tools', desc: 'Android Studio, Git, Firebase, Figma' },
+                    { icon: '🧪', title: 'Learning Focus', desc: 'Modern Android, Compose, Architecture Patterns' }
+                ],
+                experience: [
+                    {
+                        title: 'Open Source Contributions',
+                        company: 'Mozilla, Kiwix Android',
+                        duration: '2021 - Present',
+                        points: [
+                            'Contributing to Mozilla Firefox browser development',
+                            'Educational platform development',
+                            'Mobile browser enhancements forKiwix Android',
+                            'Active participation in open source community'
+                        ]
+                    },
+                    {
+                        title: 'Personal Learning Projects',
+                        company: 'Self-Directed Learning',
+                        duration: '2020 - Present',
+                        points: [
+                            'KMM News App: Multiplatform mobile development',
+                            'Sekai Sheet: Wallpaper app with modern architecture',
+                            'SpaceX Tracker: Real-time data and offline capabilities',
+                            'Continuous exploration of new Android technologies'
+                        ]
+                    },
+                    {
+                        title: 'Professional Growth',
+                        company: 'Industry Experience',
+                        duration: '2022 - Present',
+                        points: [
+                            '3+ years industry experience across 3 companies',
+                            'Worked on apps serving 50M+ combined users',
+                            'Mentored junior developers and contributed to team growth',
+                            'Continuous learning and skill development'
+                        ]
+                    }
+                ]
+            },
+            
+            visitor: {
+                video: 'W5LPcpIRLzs',
+                description: 'Android Developer who loves creating innovative mobile experiences. Contributor to open source projects like Mozilla Firefox,  and Kiwix Android',
+                skills: [
+                    { icon: '🚀', title: 'High-Scale Development', desc: '50M+ users at Angel One, 300K+ at LearnApp' },
+                    { icon: '🌟', title: 'Innovation Focus', desc: 'Modern Android, Creative Problem Solving' },
+                    { icon: '🤝', title: 'Open Source Spirit', desc: 'Mozilla, Kiwix Android contributor' },
+                    { icon: '📈', title: 'Impact Driven', desc: 'Performance optimization, User experience' }
+                ],
+                experience: [
+                    {
+                        title: 'High-Scale Application Developer',
+                        company: 'Multiple Companies',
+                        duration: '2022 - Present',
+                        points: [
+                            'Built applications serving millions of users daily',
+                            'Optimized performance for large-scale user bases',
+                            'Created innovative features that increase engagement',
+                            'Focused on scalable architecture and clean code'
+                        ]
+                    },
+                    {
+                        title: 'Open Source Community Member',
+                        company: 'Global Open Source Projects',
+                        duration: '2021 - Present',
+                        points: [
+                            'Active contributor to major open source projects',
+                            'Helping improve web browsing and education accessibility',
+                            'Sharing knowledge and giving back to the community',
+                            'Collaborating with developers worldwide'
+                        ]
+                    },
+                    {
+                        title: 'Continuous Innovator',
+                        company: 'Personal Projects & Learning',
+                        duration: 'Always Learning',
+                        points: [
+                            'Exploring cutting-edge Android technologies',
+                            'Building diverse projects from news apps to space trackers',
+                            'Passionate about creating meaningful digital experiences',
+                            'Staying updated with latest industry trends'
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Initialize the app when page loads
+        window.addEventListener('load', function() {
+            loadYouTubeAPI();
+            setupProfileSelection();
+            setupScrollEffects();
+        });
+
+        function setupProfileSelection() {
+            const profileCards = document.querySelectorAll('.profile-card');
+            const continueButton = document.getElementById('continueButton');
+
+            profileCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selection from all cards
+                    profileCards.forEach(c => c.classList.remove('selected'));
+                    
+                    // Select this card
+                    this.classList.add('selected');
+                    selectedProfile = this.dataset.type;
+                    
+                    // Enable continue button
+                    continueButton.classList.add('enabled');
+                    
+                    console.log('Selected profile:', selectedProfile);
+                });
+            });
+
+            continueButton.addEventListener('click', function() {
+                if (selectedProfile) {
+                    showLoading();
+                    setTimeout(() => {
+                        loadMainApp();
+                        hideLoading();
+                    }, 1500);
+                }
+            });
+        }
+
+        function showLoading() {
+            document.getElementById('loadingScreen').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingScreen').classList.remove('show');
+        }
+
+        function loadMainApp() {
+            // Hide account selection
+            document.getElementById('accountSelection').style.display = 'none';
+            
+            // Show main app
+            document.getElementById('mainApp').classList.add('active');
+            
+            // Load profile-specific content
+            loadProfileContent();
+        }
+
+        function loadProfileContent() {
+            const data = profileData[selectedProfile];
+            
+            // Update hero video with proper YouTube player
+            const videoId = data.video;
+            console.log('Loading video:', videoId);
+            
+            // Wait a bit for the hero section to be visible, then create player
+            setTimeout(() => {
+                createVideoPlayer(videoId);
+            }, 500);
+            
+            // Update hero description
+            document.getElementById('heroDescription').textContent = data.description;
+            
+            // Update profile button
+            const profileButton = document.getElementById('profileButton');
+            const avatarClasses = {
+                recruiter: 'recruiter-avatar',
+                student: 'student-avatar',
+                visitor: 'visitor-avatar'
+            };
+            const avatarIcons = {
+                recruiter: '👔',
+                student: '🎓',
+                visitor: '👋'
+            };
+            
+            profileButton.className = `profile-btn ${avatarClasses[selectedProfile]}`;
+            profileButton.textContent = avatarIcons[selectedProfile];
+            
+            // Load skills
+            loadSkills(data.skills);
+            
+            // Load experience
+            loadExperience(data.experience);
+        }
+
+        function loadSkills(skills) {
+            const skillsGrid = document.getElementById('skillsGrid');
+            skillsGrid.innerHTML = '';
+            
+            skills.forEach(skill => {
+                const skillCard = document.createElement('div');
+                skillCard.className = 'skill-card';
+                skillCard.innerHTML = `
+                    <div class="skill-icon">${skill.icon}</div>
+                    <h3>${skill.title}</h3>
+                    <p>${skill.desc}</p>
+                `;
+                skillsGrid.appendChild(skillCard);
+            });
+        }
+
+        function loadExperience(experience) {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+            
+            experience.forEach(exp => {
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                
+                const pointsList = exp.points.map(point => `<li>${point}</li>`).join('');
+                
+                timelineItem.innerHTML = `
+                    <h3 class="timeline-title">${exp.title}</h3>
+                    <div class="timeline-company">${exp.company}</div>
+                    <div class="timeline-duration">${exp.duration}</div>
+                    <ul class="timeline-list">
+                        ${pointsList}
+                    </ul>
+                `;
+                timeline.appendChild(timelineItem);
+            });
+        }
+
+        function setupScrollEffects() {
+            const header = document.getElementById('netflixHeader');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        }
+
+        function toggleVolume() {
+            const heroVideo = document.getElementById('heroVideo');
+            const volumeControl = document.getElementById('volumeControl');
+            
+            if (isMuted) {
+                // Unmute - reload iframe with mute=0
+                const data = profileData[selectedProfile];
+                heroVideo.src = `https://www.youtube.com/embed/${data.video}?autoplay=1&mute=0&loop=1&playlist=${data.video}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
+                volumeControl.textContent = '🔇';
+                volumeControl.style.animation = 'none';
+                isMuted = false;
+            } else {
+                // Mute - reload iframe with mute=1
+                const data = profileData[selectedProfile];
+                heroVideo.src = `https://www.youtube.com/embed/${data.video}?autoplay=1&mute=1&loop=1&playlist=${data.video}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`;
+                volumeControl.textContent = '🔊';
+                volumeControl.style.animation = 'blink 2s infinite';
+                isMuted = true;
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            }
+        }
+
+        function openLinkedIn() {
+            window.open('https://www.linkedin.com/in/areeb-ahmad-b01b1a193/', '_blank');
+        }
+
+        function openLink(url) {
+            window.open(url, '_blank');
+        }
+
+        function openProfileModal() {
+            document.getElementById('profileModal').classList.add('show');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+        }
+
+        function switchProfile(newProfile) {
+            if (newProfile !== selectedProfile) {
+                selectedProfile = newProfile;
+                showLoading();
+                setTimeout(() => {
+                    loadProfileContent();
+                    hideLoading();
+                    closeProfileModal();
+                }, 1000);
+            } else {
+                closeProfileModal();
+            }
+        }
+
+        // Navigation setup
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    scrollToSection(section);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
