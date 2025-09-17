@@ -46,20 +46,39 @@
         <!-- Netflix Header -->
         <header class="netflix-header" id="netflixHeader">
             <div class="header-logo">AREEBFLIX</div>
+          
+            <!-- Hamburger for small screens -->
+            <button class="menu-btn" id="menuBtn">☰</button>
+          
             <nav>
-                <ul class="nav-links">
-                    <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
-                    <li><a href="#" class="nav-link" data-section="projects">Projects</a></li>
-                    <li><a href="#" class="nav-link" data-section="experience">Experience</a></li>
-                    <li><a href="#" class="nav-link" data-section="skills">Skills</a></li>
-                </ul>
+              <ul class="nav-links" id="navLinks">
+                <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
+                <li><a href="#" class="nav-link" data-section="projects">Projects</a></li>
+                <li><a href="#" class="nav-link" data-section="experience">Experience</a></li>
+                <li><a href="#" class="nav-link" data-section="skills">Skills</a></li>
+              </ul>
             </nav>
+          
             <div class="header-actions">
-                <button class="search-btn">🔍</button>
-                <button class="notifications-btn">🔔</button>
-                <button class="profile-btn recruiter-avatar" id="profileButton" onclick="openProfileModal()">👔</button>
+              <button class="search-btn">🔍</button>
+              <button class="notifications-btn">🔔</button>
+              <button class="profile-btn recruiter-avatar" id="profileButton" onclick="openProfileModal()">👔</button>
             </div>
-        </header>
+          </header>
+          
+          <!-- Mobile Nav Dialog -->
+          <div class="mobile-nav-dialog" id="mobileNavDialog">
+            <div class="mobile-nav-content">
+              <button class="close-dialog" id="closeDialog">✖</button>
+              <ul>
+                <li><a href="#" data-section="home">Home</a></li>
+                <li><a href="#" data-section="projects">Projects</a></li>
+                <li><a href="#" data-section="experience">Experience</a></li>
+                <li><a href="#" data-section="skills">Skills</a></li>
+              </ul>
+            </div>
+          </div>
+          
 
         <!-- Hero Section with Video -->
         <section class="hero-section" id="heroSection">
@@ -846,6 +865,25 @@
                 });
             });
         });
+
+        const menuBtn = document.getElementById("menuBtn");
+const mobileNavDialog = document.getElementById("mobileNavDialog");
+const closeDialog = document.getElementById("closeDialog");
+
+menuBtn.addEventListener("click", () => {
+  mobileNavDialog.classList.add("show");
+});
+
+closeDialog.addEventListener("click", () => {
+  mobileNavDialog.classList.remove("show");
+});
+
+// Optional: close when clicking outside
+mobileNavDialog.addEventListener("click", (e) => {
+  if (e.target === mobileNavDialog) {
+    mobileNavDialog.classList.remove("show");
+  }
+});
     </script>
 </body>
 </html>
